@@ -1,4 +1,4 @@
-package com.tyom.weatherappcompose
+package com.tyom.weatherappcompose.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,20 +15,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
 import com.tyom.weatherappcompose.ui.theme.Blue1
 import com.tyom.weatherappcompose.ui.theme.Purple1
-import com.tyom.weatherappcompose.ui.theme.Purple80
 import com.tyom.weatherappcompose.ui.theme.WeatherAppComposeTheme
+import com.tyom.weatherappcompose.viewmodel.MainActivityViewModel
 
 class MainActivity : ComponentActivity() {
+
+    val viewModel: MainActivityViewModel =  ViewModelProvider(this).get(MainActivityViewModel::class.java)
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val viewLifecycleOwner = this
+
         super.onCreate(savedInstanceState)
+
         setContent {
             WeatherAppComposeTheme {
                 Surface(
@@ -46,6 +55,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting() {
     Column (modifier = Modifier.fillMaxSize()){
+        var temperature by remember { mutableStateOf("0") }
+        var town by remember {mutableStateOf("Astana")}
+        
         Box (modifier = Modifier
             .fillMaxHeight(0.5f)
             .fillMaxWidth()
@@ -58,6 +70,9 @@ fun Greeting() {
             .fillMaxWidth()
             .background(color = Purple1),
             contentAlignment = Alignment.BottomCenter){
+
+            Text(text = temperature.value, color = Color.White, fontSize = 25.sp)
+
             Button(onClick = { /*TODO*/ },
                 modifier = Modifier
                     .padding(5.dp)
@@ -65,6 +80,13 @@ fun Greeting() {
                 Text(text = "Refresh", fontSize = 20.sp)
             }
         }
+        viewModel.temperature.observeAsState().value?.let {
+            temperature = it
+        }
+        viewModel.town.observeAsState().value?.let {
+            temperature = it
+        }
     }
 }
+
 
