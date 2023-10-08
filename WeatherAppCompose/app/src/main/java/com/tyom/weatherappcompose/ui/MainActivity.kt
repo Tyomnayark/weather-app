@@ -15,6 +15,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,13 +30,13 @@ import com.tyom.weatherappcompose.ui.theme.Blue1
 import com.tyom.weatherappcompose.ui.theme.Purple1
 import com.tyom.weatherappcompose.ui.theme.WeatherAppComposeTheme
 import com.tyom.weatherappcompose.viewmodel.MainActivityViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 class MainActivity : ComponentActivity() {
 
-    val viewModel: MainActivityViewModel =  ViewModelProvider(this).get(MainActivityViewModel::class.java)
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        val viewLifecycleOwner = this
+        val viewModel: MainActivityViewModel =  ViewModelProvider(this).get(MainActivityViewModel::class.java)
 
         super.onCreate(savedInstanceState)
 
@@ -53,11 +55,23 @@ class MainActivity : ComponentActivity() {
 
 @Preview
 @Composable
-fun Greeting() {
+fun Greeting( ) {
+    val viewModel: MainActivityViewModel = viewModel()
+
     Column (modifier = Modifier.fillMaxSize()){
-        var temperature by remember { mutableStateOf("0") }
-        var town by remember {mutableStateOf("Astana")}
-        
+
+        val temperature = remember { mutableStateOf("0") }
+        val town = remember { mutableStateOf("Astana") }
+
+        viewModel.temperature.observeAsState().value?.let {
+            temperature.value = it
+        }
+
+        viewModel.town.observeAsState().value?.let {
+            town.value = it
+        }
+
+
         Box (modifier = Modifier
             .fillMaxHeight(0.5f)
             .fillMaxWidth()
@@ -80,12 +94,7 @@ fun Greeting() {
                 Text(text = "Refresh", fontSize = 20.sp)
             }
         }
-        viewModel.temperature.observeAsState().value?.let {
-            temperature = it
-        }
-        viewModel.town.observeAsState().value?.let {
-            temperature = it
-        }
+
     }
 }
 
